@@ -1,0 +1,15 @@
+config/secrets.env
+state/seen.json
+state/*.json
+!state/.gitkeep
+notes/
+README.md
+**/__pycache__/
+*.pyc
+.DS_Store
+.venv/
+venv/
+.env
+.env.*
+info.txt
+*.egg-info/

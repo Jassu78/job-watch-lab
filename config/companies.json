@@ -1,0 +1,371 @@
+{
+  "companies": [
+    {
+      "id": "amazon",
+      "name": "Amazon",
+      "type": "amazon_jobs",
+      "enabled": true,
+      "params": {
+        "base_query": "software engineer",
+        "loc_query": "India",
+        "country": "IND",
+        "result_limit": 20,
+        "max_pages": 3
+      }
+    },
+    {
+      "id": "zoho",
+      "name": "Zoho",
+      "type": "rss",
+      "enabled": true,
+      "params": {
+        "url": "https://careers.zohocorp.com/jobs/Careers/rss"
+      }
+    },
+    {
+      "id": "accenture",
+      "name": "Accenture",
+      "type": "workday",
+      "enabled": true,
+      "params": {
+        "base": "https://accenture.wd103.myworkdayjobs.com",
+        "tenant": "accenture",
+        "site": "AccentureCareers",
+        "searchText": "India",
+        "maxPages": 3
+      }
+    },
+    {
+      "id": "infosys",
+      "name": "Infosys",
+      "type": "infosys_api",
+      "enabled": true,
+      "params": {
+        "location": "All locations",
+        "sourceId": "1,21"
+      }
+    },
+    {
+      "id": "tcs",
+      "name": "TCS",
+      "type": "adzuna",
+      "enabled": true,
+      "params": {
+        "country": "in",
+        "what": "TCS",
+        "where": "Bangalore",
+        "results_per_page": 20,
+        "max_pages": 1
+      },
+      "note": "No public careers JSON \u2014 enable after Adzuna keys in secrets.env"
+    },
+    {
+      "id": "wipro",
+      "name": "Wipro",
+      "type": "adzuna",
+      "enabled": true,
+      "params": {
+        "country": "in",
+        "company": "Wipro",
+        "what": "software",
+        "results_per_page": 20,
+        "max_pages": 1
+      },
+      "note": "SAP SuccessFactors portal has no clean public JSON \u2014 use Adzuna when keyed"
+    },
+    {
+      "id": "cognizant",
+      "name": "Cognizant",
+      "type": "adzuna",
+      "enabled": true,
+      "params": {
+        "country": "in",
+        "what": "Cognizant software",
+        "where": "Bangalore",
+        "results_per_page": 20,
+        "max_pages": 1
+      }
+    },
+    {
+      "id": "capgemini",
+      "name": "Capgemini",
+      "type": "adzuna",
+      "enabled": true,
+      "params": {
+        "country": "in",
+        "what": "Capgemini",
+        "where": "Bangalore",
+        "results_per_page": 20,
+        "max_pages": 1
+      }
+    },
+    {
+      "id": "nvidia",
+      "name": "NVIDIA",
+      "type": "workday",
+      "enabled": true,
+      "params": {
+        "base": "https://nvidia.wd5.myworkdayjobs.com",
+        "tenant": "nvidia",
+        "site": "NVIDIAExternalCareerSite",
+        "searchText": "",
+        "maxPages": 3
+      }
+    },
+    {
+      "id": "adobe",
+      "name": "Adobe",
+      "type": "workday",
+      "enabled": true,
+      "params": {
+        "base": "https://adobe.wd5.myworkdayjobs.com",
+        "tenant": "adobe",
+        "site": "external_experienced",
+        "searchText": "",
+        "maxPages": 3
+      }
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "stripe"
+      }
+    },
+    {
+      "id": "datadog",
+      "name": "Datadog",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "datadog"
+      }
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "cloudflare"
+      }
+    },
+    {
+      "id": "airbnb",
+      "name": "Airbnb",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "airbnb"
+      }
+    },
+    {
+      "id": "postman",
+      "name": "Postman",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "postman"
+      }
+    },
+    {
+      "id": "gitlab",
+      "name": "GitLab",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "gitlab"
+      }
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "mongodb"
+      }
+    },
+    {
+      "id": "databricks",
+      "name": "Databricks",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "databricks"
+      }
+    },
+    {
+      "id": "okta",
+      "name": "Okta",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "okta"
+      }
+    },
+    {
+      "id": "elastic",
+      "name": "Elastic",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "elastic"
+      }
+    },
+    {
+      "id": "twilio",
+      "name": "Twilio",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "twilio"
+      }
+    },
+    {
+      "id": "dropbox",
+      "name": "Dropbox",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "dropbox"
+      }
+    },
+    {
+      "id": "coinbase",
+      "name": "Coinbase",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "coinbase"
+      }
+    },
+    {
+      "id": "figma",
+      "name": "Figma",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "figma"
+      }
+    },
+    {
+      "id": "asana",
+      "name": "Asana",
+      "type": "greenhouse",
+      "enabled": true,
+      "params": {
+        "board": "asana"
+      }
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "type": "lever",
+      "enabled": true,
+      "params": {
+        "company": "spotify"
+      }
+    },
+    {
+      "id": "paytm",
+      "name": "Paytm",
+      "type": "lever",
+      "enabled": true,
+      "params": {
+        "company": "paytm"
+      }
+    },
+    {
+      "id": "meesho",
+      "name": "Meesho",
+      "type": "lever",
+      "enabled": true,
+      "params": {
+        "company": "meesho"
+      }
+    },
+    {
+      "id": "palantir",
+      "name": "Palantir",
+      "type": "lever",
+      "enabled": true,
+      "params": {
+        "company": "palantir"
+      }
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI",
+      "type": "ashby",
+      "enabled": true,
+      "params": {
+        "board": "openai"
+      }
+    },
+    {
+      "id": "ramp",
+      "name": "Ramp",
+      "type": "ashby",
+      "enabled": true,
+      "params": {
+        "board": "ramp"
+      }
+    },
+    {
+      "id": "notion",
+      "name": "Notion",
+      "type": "ashby",
+      "enabled": true,
+      "params": {
+        "board": "notion"
+      }
+    },
+    {
+      "id": "bosch",
+      "name": "Bosch",
+      "type": "smartrecruiters",
+      "enabled": true,
+      "params": {
+        "company": "BoschGroup",
+        "limit": 100,
+        "maxPages": 2
+      }
+    }
+  ],
+  "aggregators": [
+    {
+      "id": "adzuna",
+      "name": "Adzuna",
+      "type": "adzuna",
+      "enabled": true,
+      "params": {
+        "country": "in",
+        "results_per_page": 20,
+        "max_pages": 1
+      }
+    },
+    {
+      "id": "remotive",
+      "name": "Remotive",
+      "type": "remotive",
+      "enabled": true,
+      "params": {
+        "category": "software-dev"
+      }
+    },
+    {
+      "id": "jsearch",
+      "name": "JSearch",
+      "type": "jsearch",
+      "enabled": false,
+      "params": {
+        "country": "in",
+        "num_pages": 1,
+        "date_posted": "week"
+      }
+    }
+  ]
+}
