@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-import urllib.error
-import urllib.parse
-import urllib.request
 from typing import Any
 
 
@@ -27,7 +24,6 @@ def pack_jobs_dp(
     limit: int = TELEGRAM_LIMIT,
     scores: list[int] | None = None,
 ) -> list[dict[str, Any]]:
-    """0/1 knapsack on message bytes: max score under char budget."""
     if not jobs:
         return []
     budget = max(0, limit - len(header) - 2)
@@ -38,7 +34,6 @@ def pack_jobs_dp(
     if sum(costs) <= budget:
         return list(jobs)
 
-    # Cap DP table size for large n: take top by value/cost then exact DP.
     order = sorted(range(n), key=lambda i: vals[i] / max(1, costs[i]), reverse=True)
     order = order[: min(n, 40)]
     m = len(order)
@@ -74,23 +69,3 @@ def format_jobs(jobs: list[dict], header: str) -> str:
             lines.append(f"  {job['url']}")
         lines.append("")
     return "\n".join(lines).strip()
-
-
-def send_telegram(token: str, chat_ids: list[str], text: str) -> bool:
-    if not token or not chat_ids:
-        return False
-    ok = True
-    chunk = text[:TELEGRAM_LIMIT]
-    for chat_id in chat_ids:
-        payload = urllib.parse.urlencode({"chat_id": chat_id, "text": chunk}).encode()
-        req = urllib.request.Request(
-            f"https://api.telegram.org/bot{token}/sendMessage",
-            data=payload,
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                resp.read()
-        except urllib.error.URLError:
-            ok = False
-    return ok

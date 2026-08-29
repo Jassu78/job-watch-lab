@@ -1,4 +1,5 @@
 config/secrets.env
+config/notifiers.json
 state/seen.json
 state/*.json
 !state/.gitkeep

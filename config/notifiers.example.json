@@ -1,0 +1,21 @@
+{
+  "channels": [
+    {
+      "id": "jobwatcher-telegram",
+      "type": "telegram",
+      "enabled": true,
+      "params": {
+        "allow_only": ["YOUR_TELEGRAM_CHAT_ID"],
+        "chat_ids": ["YOUR_TELEGRAM_CHAT_ID"],
+        "recipient": {
+          "id": 0,
+          "first_name": "",
+          "last_name": "",
+          "language_code": "en"
+        },
+        "bot_username": "YOUR_BOT_USERNAME",
+        "deep_link": "https://t.me/YOUR_BOT_USERNAME"
+      }
+    }
+  ]
+}

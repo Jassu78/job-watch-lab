@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JobWatcher · Phosphor Catalog</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <div id="gate" class="gate wrap" hidden>
+    <h1 class="brand">Catalog</h1>
+    <p id="gateHint">Open from Telegram (/desk or Catalog menu), or paste a same-host desk key.</p>
+    <div class="row-input">
+      <input id="gateKey" type="text" placeholder="desk key (fallback)" autocomplete="off" />
+      <button class="btn" id="gateGo" type="button">Enter</button>
+    </div>
+  </div>
+
+  <div id="app" class="wrap" hidden>
+    <h1 class="brand">JobWatcher</h1>
+    <p class="tagline">Phosphor catalog — flexible filters, history, sources.</p>
+
+    <div class="statusbar" id="statusBar">
+      <span class="live" id="liveState">loading</span>
+      <span id="statCheck">last check —</span>
+      <span id="statRecent">history —</span>
+      <span id="statSched">scans 11:00 · 19:30 IST</span>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab" data-tab="jobs" aria-selected="true" type="button">Latest</button>
+      <button class="tab" data-tab="filters" type="button">Filters</button>
+      <button class="tab" data-tab="sources" type="button">Sources</button>
+      <button class="tab" data-tab="health" type="button">Health</button>
+    </nav>
+
+    <section class="panel active" id="tab-jobs">
+      <h2>Job history</h2>
+      <div class="jobs-controls">
+        <input id="jobQ" type="text" placeholder="Search title, company, place…" />
+        <div class="jobs-filters">
+          <select id="jobSource">
+            <option value="">All sources</option>
+          </select>
+          <select id="jobPageSize" title="page size">
+            <option value="10">10 / page</option>
+            <option value="20">20 / page</option>
+            <option value="50">50 / page</option>
+          </select>
+          <button class="btn ghost" id="jobRefresh" type="button">Refresh</button>
+        </div>
+      </div>
+      <p class="jobs-count" id="jobPageLabel">—</p>
+      <div class="jobs" id="jobList"></div>
+      <div class="pager" id="jobPager">
+        <button class="btn ghost" id="jobPrev" type="button">← Prev</button>
+        <span id="jobPageShort">1 / 1</span>
+        <button class="btn ghost" id="jobNext" type="button">Next →</button>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-filters">
+      <h2>Match rules</h2>
+      <div class="field toggle">
+        <input type="checkbox" id="muted" />
+        <label for="muted" style="margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Pause Telegram alerts</label>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Title any</label>
+          <div class="hint">Match if title contains any of these</div>
+          <div class="chips" data-key="title_any"></div>
+          <div class="row-input">
+            <input type="text" data-add="title_any" placeholder="add term + Enter" />
+            <button class="btn ghost" type="button" data-addbtn="title_any">Add</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Title exclude</label>
+          <div class="chips" data-key="title_exclude"></div>
+          <div class="row-input">
+            <input type="text" data-add="title_exclude" placeholder="add term + Enter" />
+            <button class="btn ghost" type="button" data-addbtn="title_exclude">Add</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Keywords any</label>
+          <div class="chips" data-key="keywords_any"></div>
+          <div class="row-input">
+            <input type="text" data-add="keywords_any" placeholder="add term + Enter" />
+            <button class="btn ghost" type="button" data-addbtn="keywords_any">Add</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Keywords all (must all appear)</label>
+          <div class="chips" data-key="keywords_all"></div>
+          <div class="row-input">
+            <input type="text" data-add="keywords_all" placeholder="add term + Enter" />
+            <button class="btn ghost" type="button" data-addbtn="keywords_all">Add</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Keywords exclude</label>
+          <div class="chips" data-key="keywords_exclude"></div>
+          <div class="row-input">
+            <input type="text" data-add="keywords_exclude" placeholder="add term + Enter" />
+            <button class="btn ghost" type="button" data-addbtn="keywords_exclude">Add</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Locations</label>
+          <div class="chips" data-key="locations_any"></div>
+          <div class="row-input">
+            <input type="text" data-add="locations_any" placeholder="add place + Enter" />
+            <button class="btn ghost" type="button" data-addbtn="locations_any">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Max days old</label>
+          <input type="number" id="maxDays" min="0" placeholder="e.g. 14" />
+        </div>
+        <div class="field">
+          <label>Max per source</label>
+          <input type="number" id="maxPer" min="1" max="50" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field toggle">
+          <input type="checkbox" id="srcCompanies" />
+          <label for="srcCompanies" style="margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Include company boards</label>
+        </div>
+        <div class="field toggle">
+          <input type="checkbox" id="srcAggregators" />
+          <label for="srcAggregators" style="margin:0;text-transform:none;letter-spacing:0;color:var(--text)">Include aggregators</label>
+        </div>
+      </div>
+
+      <div class="adv field">
+        <details>
+          <summary>Bulk paste / advanced JSON</summary>
+          <p class="hint">Paste one term per line into a list, or edit full JSON.</p>
+          <label>Bulk into</label>
+          <select id="bulkTarget">
+            <option value="keywords_any">keywords_any</option>
+            <option value="keywords_all">keywords_all</option>
+            <option value="keywords_exclude">keywords_exclude</option>
+            <option value="title_any">title_any</option>
+            <option value="title_exclude">title_exclude</option>
+            <option value="locations_any">locations_any</option>
+          </select>
+          <textarea id="bulkText" placeholder="one term per line"></textarea>
+          <div class="row-input" style="margin-top:0.4rem">
+            <button class="btn ghost" id="bulkMerge" type="button">Merge into list</button>
+            <button class="btn ghost" id="bulkReplace" type="button">Replace list</button>
+          </div>
+          <label style="margin-top:0.8rem">Raw filters JSON</label>
+          <textarea id="rawJson" spellcheck="false"></textarea>
+          <div class="row-input" style="margin-top:0.4rem">
+            <button class="btn ghost" id="rawApply" type="button">Apply JSON</button>
+            <button class="btn ghost" id="exportJson" type="button">Download</button>
+            <label class="btn ghost" style="display:inline-flex;align-items:center">
+              Import
+              <input id="importJson" type="file" accept="application/json,.json" hidden />
+            </label>
+          </div>
+        </details>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="saveFilters" type="button">Save filters</button>
+        <button class="btn ghost" id="reloadFilters" type="button">Reload</button>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-sources">
+      <h2>Boards & aggregators</h2>
+      <p class="hint">Toggle any source on/off. Changes apply to the next scan.</p>
+      <div class="toolbar">
+        <button class="btn ghost" id="srcAllOn" type="button">Enable all</button>
+        <button class="btn ghost" id="srcAllOff" type="button">Disable all</button>
+        <input id="srcFilter" type="text" placeholder="filter sources…" style="flex:1;min-width:160px" />
+      </div>
+      <div class="source-list" id="sourceList"></div>
+      <div class="actions">
+        <button class="btn" id="saveSources" type="button">Save sources</button>
+      </div>
+    </section>
+
+    <section class="panel" id="tab-health">
+      <h2>Watcher health</h2>
+      <div id="healthWrap"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

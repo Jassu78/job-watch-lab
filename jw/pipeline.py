@@ -3,8 +3,10 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
+from jw.config import enabled_notifiers, load_notifiers_config
 from jw.filters import CompiledFilters, apply_filters, compile_filters, rank_jobs
-from jw.notify import format_jobs, pack_jobs_dp, send_telegram
+from jw.notify import format_jobs, pack_jobs_dp
+from jw.notifiers.registry import get_notifier
 from jw.registry import get_source
 from jw.state import load_state, new_matches, save_state, update_seen
 
@@ -55,9 +57,11 @@ def settle_source(
             fetch_count=len(jobs),
             seed=True,
         )
-        return [], (
+        # Return ranked matches for /latest catalog only; caller must not notify.
+        ranked = rank_jobs(matched, compiled)[:max_per_source]
+        return ranked, (
             f"SEED {sid}: fetch={len(jobs)} match={len(matched)} "
-            f"tracking={len(entry['seen_ids'])} (no alert)"
+            f"tracking={len(entry['seen_ids'])} catalog={len(ranked)} (no alert)"
         )
 
     alerts_all = new_matches(entry, matched)
@@ -74,6 +78,53 @@ def settle_source(
         f"OK {sid}: fetch={len(jobs)} match={len(matched)} "
         f"new={len(alerts_all)} alert={len(alerts)}"
     )
+
+
+def build_notifiers(secrets: dict[str, str]) -> list[Any]:
+    channels = enabled_notifiers(load_notifiers_config())
+    out = []
+    for ch in channels:
+        n = get_notifier(ch, secrets)
+        ready, reason = n.ready()
+        if not ready:
+            print(f"notifier {ch.get('id')}: skip ({reason})")
+            continue
+        out.append(n)
+    return out
+
+
+def dispatch_alerts(
+    by_source: dict[str, list[dict[str, Any]]],
+    compiled: CompiledFilters,
+    secrets: dict[str, str],
+    *,
+    notify: bool,
+) -> None:
+    from jw.bot.prefs import is_muted, push_recent
+
+    notifiers = build_notifiers(secrets) if notify else []
+    muted = is_muted() if notify else False
+    for sid, jobs in by_source.items():
+        header = f"🆕 {sid} ({len(jobs)})"
+        scores = [compiled.score(j) for j in jobs]
+        packed = pack_jobs_dp(jobs, header=header, scores=scores)
+        block = format_jobs(packed, header)
+        print("\n" + block)
+        push_recent(packed, source_id=sid)
+        if not notify:
+            continue
+        if muted:
+            print(f"notify skipped: muted (/unmute to resume) [{sid}]")
+            continue
+        if not notifiers:
+            print("notify skipped: no ready channels in config/notifiers.json")
+            continue
+        for n in notifiers:
+            try:
+                ok = n.send_jobs(packed, header=header, scores=scores)
+                print(f"{n.type_name}:{n.channel_id} {sid}: {'ok' if ok else 'FAIL'}")
+            except Exception as e:
+                print(f"{n.type_name}:{n.channel_id} {sid}: FAIL {e}")
 
 
 def run_one(
@@ -163,25 +214,6 @@ def run_all(
         print("\nNo matches to show.")
         return 0
 
-    token = secrets.get("ALERT_TELEGRAM_BOT_TOKEN", "")
-    chats = [
-        x.strip()
-        for x in secrets.get("ALERT_TELEGRAM_CHAT_IDS", "").split(",")
-        if x.strip()
-    ]
-
-    for sid, jobs in by_source.items():
-        header = f"🆕 {sid} ({len(jobs)})"
-        scores = [compiled.score(j) for j in jobs]
-        packed = pack_jobs_dp(jobs, header=header, scores=scores)
-        block = format_jobs(packed, header)
-        print("\n" + block)
-        if notify and mode == "watch":
-            if token and chats:
-                ok = send_telegram(token, chats, block)
-                print(f"telegram {sid}: {'ok' if ok else 'FAIL'}")
-            else:
-                print("telegram skipped: missing token/chat ids in secrets.env")
-
+    dispatch_alerts(by_source, compiled, secrets, notify=notify and mode == "watch")
     print(f"\nTotal shown: {total}")
     return 0

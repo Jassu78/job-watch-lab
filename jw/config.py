@@ -11,6 +11,7 @@ NOTES_DIR = LAB_ROOT / "notes"
 STATE_DIR = LAB_ROOT / "state"
 COMPANIES_PATH = CONFIG_DIR / "companies.json"
 FILTERS_PATH = CONFIG_DIR / "filters.json"
+NOTIFIERS_PATH = CONFIG_DIR / "notifiers.json"
 SECRETS_PATH = CONFIG_DIR / "secrets.env"
 STATE_PATH = STATE_DIR / "seen.json"
 
@@ -21,6 +22,13 @@ SECRET_KEYS = (
     "JSEARCH_BASE_URL",
     "ALERT_TELEGRAM_BOT_TOKEN",
     "ALERT_TELEGRAM_CHAT_IDS",
+    "WEB_UI_SECRET",
+    "WEB_UI_TOKEN",
+    "WEB_UI_HOST",
+    "WEB_UI_PORT",
+    "WEB_UI_URL",
+    "WEB_APP_URL",
+    "TELEGRAM_WEBAPP_URL",
 )
 
 
@@ -50,6 +58,24 @@ def load_sources_config(path: Path = COMPANIES_PATH) -> dict[str, Any]:
 
 def load_filters(path: Path = FILTERS_PATH) -> dict[str, Any]:
     return load_json(path)
+
+
+def load_notifiers_config(path: Path = NOTIFIERS_PATH) -> dict[str, Any]:
+    if not path.is_file():
+        return {"channels": []}
+    return load_json(path)
+
+
+def enabled_notifiers(
+    cfg: dict[str, Any] | None = None,
+    *,
+    only: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    cfg = cfg if cfg is not None else load_notifiers_config()
+    out = [c for c in (cfg.get("channels") or []) if c.get("enabled", True)]
+    if only:
+        out = [c for c in out if c.get("id") in only or c.get("type") in only]
+    return out
 
 
 def enabled_sources(
